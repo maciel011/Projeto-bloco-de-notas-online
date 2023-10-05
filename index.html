@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloco de Notas Online 📝</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bloco de Notas Online 🖋</h1>
+    </header>
+
+    <main>
+        <textarea id="notepad" placeholder="Digite sua nota aqui"></textarea>
+        <button id="saveButton">Salvar Nota</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Bloco de Notas Online</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+<script>
+    const notepad = document.getElementById("notepad");
+const saveButton = document.getElementById("saveButton");
+const noteList = document.getElementById("noteList");
+
+// Carregar notas salvas anteriormente
+window.addEventListener("load", () => {
+    const savedNotes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+    savedNotes.forEach((note, index) => {
+        createNoteElement(note, index);
+    });
+});
+
+// Salvar nota atual
+saveButton.addEventListener("click", () => {
+    const content = notepad.value;
+    if (content.trim() !== "") {
+        const savedNotes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+        savedNotes.push(content);
+        localStorage.setItem("savedNotes", JSON.stringify(savedNotes));
+        createNoteElement(content, savedNotes.length - 1);
+        notepad.value = "";
+    }
+});
+
+// Criar elemento de nota na lista
+function createNoteElement(content, index) {
+    const listItem = document.createElement("li");
+    listItem.innerHTML = `<button onclick="deleteNote(${index})">Excluir</button> ${content}`;
+    noteList.appendChild(listItem);
+}
+
+// Excluir uma nota
+function deleteNote(index) {
+    const savedNotes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+    savedNotes.splice(index, 1);
+    localStorage.setItem("savedNotes", JSON.stringify(savedNotes));
+    refreshNoteList();
+}
+
+// Atualizar lista de notas
+function refreshNoteList() {
+    while (noteList.firstChild) {
+        noteList.removeChild(noteList.firstChild);
+    }
+
+    const savedNotes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+    savedNotes.forEach((note, index) => {
+        createNoteElement(note, index);
+    });
+}
+
+</script>
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+main {
+    padding: 20px;
+}
+
+textarea {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+footer {
+    background-color: #333333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+</style>
+</html>
